@@ -20,6 +20,9 @@ local tex
 --- @type Shader
 local shader
 
+--- @type Thread
+local scheduler
+
 local resultChannel = lovr.thread.getChannel("result") --- @type Channel
 
 function lovr.load()
@@ -51,7 +54,8 @@ function lovr.load()
     }
 
     -- Start the scheduler thread.
-    lovr.thread.newThread("scheduler.lua"):start(ctx.quality)
+    scheduler = lovr.thread.newThread("scheduler.lua")
+    scheduler:start(ctx.quality)
 
     -- Create the initial texture.
     local img = lovr.data.newImage(uvmap.size, uvmap.size, "rgba32f")
@@ -115,5 +119,11 @@ function lovr.draw(pass)
     -- pass:setColor(1, 1, 1, 1)
     -- pass:fill(tex)
 
+    return false
+end
+
+function lovr.quit()
+    -- Wait for the scheduler thread to finish.
+    scheduler:wait()
     return false
 end

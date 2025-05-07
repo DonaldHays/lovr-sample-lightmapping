@@ -28,9 +28,14 @@ local quality = ...
 
 -- Spawn the worker threads. We spawn one fewer than the number of CPU cores to
 -- try to avoid contention with the main thread.
+
+--- @type Thread[]
+local workers = {}
 local threadCount = math.max(1, lovr.system.getCoreCount() - 1)
 for threadID = 1, threadCount do
-    lovr.thread.newThread("worker.lua"):start(threadID, quality)
+    local worker = lovr.thread.newThread("worker.lua")
+    table.insert(workers, worker)
+    worker:start(threadID, quality)
 end
 
 -- The job channel is used to send jobs to the workers. The job done channel is
@@ -272,13 +277,14 @@ resultChannel:push({
     stat = "AO: " .. formatTime(start)
 })
 
--- Tell the workers to quit. I ran into an issue where my Quest would hang if I
--- relaunched the app soon after quitting if I didn't quit the blocked threads.
--- That's probably a Meta issue rather than a Lovr issue.
---
--- Probably.
+-- Tell the workers to quit.
 for i = 1, threadCount do
     --- @type QuitJob
     local job = { kind = "quit", faceIndex = i }
     jobChannel:push(job)
+end
+
+-- Wait for the workers to quit.
+for _, worker in ipairs(workers) do
+    worker:wait()
 end
