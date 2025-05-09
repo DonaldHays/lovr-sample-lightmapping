@@ -45,5 +45,5 @@ vec4 textureBicubic(texture2D samp, vec2 texCoords) {
 }
 
 vec4 lovrmain() {
-    return Color * textureBicubic(ColorTexture, UV) * 2.0f;
+    return Color * textureBicubic(ColorTexture, UV);
 }

@@ -357,24 +357,14 @@ end
 --- @param img Image
 --- @return Image
 function utils.finalizeImage(img)
-    -- We originally calculate using a floating point format, with an unbound
-    -- dynamic range. But the texture needs to range from 0.0 - 1.0 (at least,
-    -- conceptually, in reality it's 0-255), so we have to cap it.
-    --
-    -- As an extra trick (inspired by Quake), we divide by 2 before capping.
-    -- Then, in the shader, we multiply by 2. This allows us to overbrighten
-    -- surfaces. To see what lightmaps look like without this trick, remove the
-    -- divisions by 2 here and the multiplication by 2.0f in `lovrmain` in
-    -- `shaders/fragment.glsl`. Note how flat the highlights look.
-
     local w, h = img:getDimensions()
-    local finalImg = lovr.data.newImage(w, h)
+    local finalImg = lovr.data.newImage(w, h, "rgba16f")
     finalImg:mapPixel(
         function(x, y, _, _, _, _)
             local fr, fg, fb = img:getPixel(x, y)
-            return math.min(fr / 2, 1),
-                math.min(fg / 2, 1),
-                math.min(fb / 2, 1),
+            return math.min(fr, 1),
+                math.min(fg, 1),
+                math.min(fb, 1),
                 1
         end
     )
