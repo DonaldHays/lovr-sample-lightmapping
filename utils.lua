@@ -362,10 +362,7 @@ function utils.finalizeImage(img)
     finalImg:mapPixel(
         function(x, y, _, _, _, _)
             local fr, fg, fb = img:getPixel(x, y)
-            return math.min(fr, 1),
-                math.min(fg, 1),
-                math.min(fb, 1),
-                1
+            return fr, fg, fb, 1
         end
     )
     return finalImg
