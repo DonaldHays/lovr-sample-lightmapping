@@ -286,6 +286,5 @@ end
 
 -- Wait for the workers to quit.
 for _, worker in ipairs(workers) do
-    -- TODO: I appear to get crashes on Quest when this next line is uncommented
-    -- worker:wait()
+    worker:wait()
 end
