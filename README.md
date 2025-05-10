@@ -41,18 +41,8 @@ enhancing the sense of definition. Rays are cast out a limited distance, and the
 surface is darkened based on how many rays hit another surface, and how close
 those hits are to the surface.
 
-## Shader
-The shader used to render the lightmap has two tricks: bicubic filtering, and
-overbrightening.
-
-### Bicubic Filtering
+## Bicubic Filtering
 Normal bilinear texture filtering produces a noticeable blocky pattern that
 stands out for the large texel sizes of a lightmap. A shader-based bicubic
 texture sampler smooths out shadow edges. Combined with the anti-aliasing from
 the direct lighting pass, shadows have minimal artifacting.
-
-### Overbrightening
-The lightmap texture must be clamped to a range of 0.0 - 1.0. But before doing
-so, this sample divides its colors by 2. Then, in the shader, the light is
-multiplied by 2. This allows the lightmap to brighten surfaces beyond their
-base color, allowing for a more natural over-exposed look.
